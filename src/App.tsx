@@ -1,0 +1,230 @@
+// src/App.tsx
+import { useState, useEffect } from 'react';
+import Background from './components/Background';
+import FallingCubes from './components/FallingCubes';
+import Hero from './components/Hero';
+import { fetchData, getFotos } from './services/apiService';
+import { getDatosPersonales } from './services/datosPersonalesService';
+import type { DatosPersonales, ExperienciaLaboral, Estudio, Tecnologia, Foto } from './types/Portfolio';
+import { motion, AnimatePresence } from 'framer-motion';
+import TechIcon from './components/TechIcon';
+
+function App() {
+  const [showPortfolio, setShowPortfolio] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'perfil' | 'experiencia' | 'estudios' | 'tech'>('perfil');
+  
+  const [datos, setDatos] = useState<DatosPersonales[]>([]);
+  const [experiencias, setExperiencias] = useState<ExperienciaLaboral[]>([]);
+  const [estudios, setEstudios] = useState<Estudio[]>([]);
+  const [techs, setTechs] = useState<Tecnologia[]>([]);
+  const [fotos, setFotos] = useState<Foto[]>([]);
+
+  const menuOptions = [
+    { id: 'perfil', label: 'Sobre Mí' },
+    { id: 'experiencia', label: 'Experiencia' },
+    { id: 'estudios', label: 'Estudios' },
+    { id: 'tech', label: 'Tecnologías' }
+  ];
+
+  useEffect(() => {
+    if (showPortfolio) {
+      setLoading(true);
+      Promise.all([
+        getDatosPersonales(),
+        fetchData<ExperienciaLaboral>('ExperienciaLaboral'),
+        fetchData<Estudio>('Estudios'),
+        fetchData<Tecnologia>('Tecnologias'),
+        getFotos()
+      ]).then(([datosData, expData, eduData, techData, fotosData]) => {
+        setDatos(datosData);
+        setExperiencias(expData.sort((a, b) => a.orden - b.orden));
+        setEstudios(eduData.sort((a, b) => a.orden - b.orden));
+        setTechs(techData.sort((a, b) => a.orden - b.orden));
+        setFotos(fotosData);
+      }).finally(() => setLoading(false));
+    }
+  }, [showPortfolio]);
+
+  return (
+    <div className="relative min-h-screen w-full text-white selection:bg-purple-500/30">
+      <Background />
+      <FallingCubes />
+      
+      <main className="relative z-20 container mx-auto px-6">
+        <AnimatePresence mode="wait">
+          {!showPortfolio ? (
+            <Hero key="hero" onShowPortfolio={() => setShowPortfolio(true)} />
+          ) : (
+            <motion.section 
+              key="portfolio" 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="py-8 max-w-6xl mx-auto"
+            >
+              {/* NAVEGACIÓN SUPERIOR REFORMADA */}
+              <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-16 border-b border-white/5 pb-8">
+                
+                {/* MENÚ DE NAVEGACIÓN (Izquierda/Centro) */}
+                <nav className="flex gap-1 bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-sm">
+                  {menuOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => setActiveTab(option.id as any)}
+                      className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                        activeTab === option.id 
+                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' 
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </nav>
+
+                {/* BOTÓN VOLVER MEJORADO (Derecha) */}
+                <button 
+                  onClick={() => setShowPortfolio(false)} 
+                  className="group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-red-500/10 hover:border-red-500/50 transition-all duration-300"
+                >
+                  <span className="text-xs font-mono text-gray-500 group-hover:text-red-400 transition-colors">CERRAR</span>
+                  <div className="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 group-hover:bg-red-500 transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 3L3 9M3 3L9 9" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                </button>
+              </div>
+
+              <div className="min-h-[500px]">
+                {loading ? (
+                  <div className="flex flex-col justify-center items-center h-64 gap-4">
+                    <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
+                    <p className="text-purple-400 animate-pulse font-mono text-xs tracking-widest">SINCRONIZANDO DATOS .NET</p>
+                  </div>
+                ) : (
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeTab}
+                      initial={{ opacity: 0, x: 5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {/* SOBRE MÍ */}
+                      {activeTab === 'perfil' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                          <div className="lg:col-span-4 flex justify-center">
+                            <div className="relative group">
+                              <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-blue-500 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                              <div className="relative bg-[#0d091a] rounded-2xl overflow-hidden border border-white/10 w-72 h-96 shadow-2xl">
+                                {fotos.find(f => f.tipo === 'perfil') ? (
+                                  <img 
+                                    src={`data:image/jpeg;base64,${fotos.find(f => f.tipo === 'perfil')?.contenidoBase64}`} 
+                                    alt="Luis Angel Cordoba" 
+                                    className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-500"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                    <span className="text-gray-600 text-xs font-mono">NO IMAGE FOUND</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="lg:col-span-8 space-y-6">
+                            {datos.map((item) => (
+                              <div key={item.id} className="bg-white/5 border border-white/10 p-10 rounded-[2.5rem] backdrop-blur-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 blur-[80px] rounded-full"></div>
+                                <h3 className="text-5xl font-bold text-white mb-3 tracking-tight">{item.nombre} {item.apellidos}</h3>
+                                <p className="text-purple-400 font-mono mb-8 uppercase tracking-[0.2em] text-sm font-semibold">{item.profesion}</p>
+                                <p className="text-gray-300 leading-relaxed text-xl font-light italic">"{item.sobreMi}"</p>
+                                
+                                <div className="mt-12 pt-8 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-400">
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-purple-500">📍</span> {item.ubicacion}
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-purple-500">📧</span> {item.correo}
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-purple-500">📞</span> {item.telefono}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* EXPERIENCIA */}
+                      {activeTab === 'experiencia' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {experiencias.map((exp) => (
+                            <div key={exp.id} className="bg-white/5 border border-white/10 p-8 rounded-3xl border-l-4 border-l-purple-500 hover:bg-white/[0.07] transition-all duration-300 group">
+                              <span className="text-xs font-mono text-purple-400 uppercase tracking-widest">{exp.empresa}</span>
+                              <h4 className="text-2xl font-bold text-white mt-2 mb-3 group-hover:text-purple-300 transition-colors">{exp.cargo}</h4>
+                              <p className="text-gray-400 text-sm mb-6 leading-relaxed font-light">{exp.descripcion}</p>
+                              <div className="flex justify-between items-center mt-auto pt-4 border-t border-white/5">
+                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold bg-white/5 px-3 py-1 rounded-full">
+                                  {new Date(exp.fechaInicio).getFullYear()} — {exp.actualmente ? 'PRESENTE' : 'FINALIZADO'}
+                                </span>
+                                <span className="text-[10px] text-gray-600 font-mono uppercase tracking-tighter">{exp.ubicacion}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* ESTUDIOS */}
+                      {activeTab === 'estudios' && (
+                        <div className="space-y-4 max-w-4xl mx-auto">
+                          {estudios.map((edu) => (
+                            <div key={edu.id} className="bg-white/5 border border-white/10 p-8 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center group hover:bg-white/10 transition-all duration-300">
+                              <div className="flex items-center gap-6">
+                                <div className="w-12 h-12 rounded-2xl bg-purple-600/10 flex items-center justify-center text-2xl group-hover:bg-purple-600/20 transition-colors">🎓</div>
+                                <div>
+                                  <h4 className="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">{edu.titulo}</h4>
+                                  <p className="text-gray-400 text-sm mt-1">{edu.institucion}</p>
+                                </div>
+                              </div>
+                              <div className="mt-4 md:mt-0 bg-purple-600/10 px-6 py-2 rounded-2xl text-xs font-mono text-purple-300 border border-purple-500/20">
+                                {new Date(edu.fechaFin).getFullYear()}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* TECNOLOGÍAS */}
+                      {activeTab === 'tech' && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+                          {techs.map((tech) => (
+                            <div key={tech.id} className="bg-white/5 border border-white/10 p-8 rounded-3xl text-center hover:border-purple-500/50 hover:bg-white/10 transition-all duration-500 group relative">
+                              <div className="absolute top-2 right-4 text-[8px] font-mono text-white/10 group-hover:text-purple-500/50 transition-colors">0{tech.orden}</div>
+                              <div className="flex justify-center mb-5 group-hover:scale-125 transition-transform duration-500 ease-out">
+                                <TechIcon name={tech.icono} className="w-12 h-12 object-contain" />
+                              </div>
+                              <h5 className="font-bold text-sm text-white mb-1">{tech.nombre}</h5>
+                              <p className="text-[10px] text-purple-500 uppercase tracking-[0.15em] font-black opacity-80">
+                                {tech.nivel}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+}
+
+export default App;
