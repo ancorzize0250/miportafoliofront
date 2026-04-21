@@ -191,7 +191,7 @@ function App() {
                                 </div>
                               </div>
                               <div className="mt-4 md:mt-0 bg-purple-600/10 px-6 py-2 rounded-2xl text-xs font-mono text-purple-300 border border-purple-500/20">
-                                {new Date(edu.fechaFin).getFullYear()}
+                                {edu.fechaFin  ? new Date(edu.fechaFin).getFullYear()  : "Actualidad"}
                               </div>
                             </div>
                           ))}
