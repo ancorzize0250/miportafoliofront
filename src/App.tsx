@@ -150,18 +150,6 @@ function App() {
                                 <h3 className="text-5xl font-bold text-white mb-3 tracking-tight">{item.nombre} {item.apellidos}</h3>
                                 <p className="text-purple-400 font-mono mb-8 uppercase tracking-[0.2em] text-sm font-semibold">{item.profesion}</p>
                                 <p className="text-gray-300 leading-relaxed text-xl font-light italic">"{item.sobreMi}"</p>
-                                
-                                <div className="mt-12 pt-8 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-400">
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-purple-500">📍</span> {item.ubicacion}
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-purple-500">📧</span> {item.correo}
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-purple-500">📞</span> {item.telefono}
-                                  </div>
-                                </div>
                               </div>
                             ))}
                           </div>
