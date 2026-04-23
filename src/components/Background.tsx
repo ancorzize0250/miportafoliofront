@@ -1,4 +1,3 @@
-// src/components/Background.tsx
 import React from 'react';
 import { useMousePosition } from '../hooks/useMousePosition';
 

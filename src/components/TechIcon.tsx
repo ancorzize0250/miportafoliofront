@@ -1,4 +1,3 @@
-// src/components/TechIcon.tsx
 import React from 'react';
 import { 
   Globe, 
@@ -38,6 +37,10 @@ const TechIcon: React.FC<Props> = ({ name, className = "w-10 h-10" }) => {
     'gitlab': { slug: 'gitlab', color: 'FC6D26' },
     'c#': { slug: 'c', color: '512BD4' }, 
     'dotnet': { slug: 'dotnet', color: '512BD4' },
+    'whatsapp': { slug: 'whatsapp', color: 'FFFFFF' },
+    'gmail': { slug: 'gmail', color: 'EA4335' }, 
+    'maps': { slug: 'googlemaps', color: '4285F4' },
+    'phone': { slug: '錘子', color: 'A855F7' },
   };
 
   const technicalIcons: Record<string, React.ReactNode> = {

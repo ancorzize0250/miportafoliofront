@@ -1,5 +1,3 @@
-// src/services/apiService.ts
-
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 import type { Foto } from '../types/Portfolio';

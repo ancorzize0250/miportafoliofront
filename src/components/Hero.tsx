@@ -2,9 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 interface HeroProps {
         onShowPortfolio: () => void;
+        onContactClick: () => void;
     }
     
-const Hero: React.FC<HeroProps> = ({ onShowPortfolio }) => {
+const Hero: React.FC<HeroProps> = ({ onShowPortfolio, onContactClick }) => {
     
 
   return (
@@ -60,7 +61,9 @@ const Hero: React.FC<HeroProps> = ({ onShowPortfolio }) => {
           Ver portafolio
         </button>
         
-        <button className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all">
+        <button 
+        onClick={onContactClick}
+        className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all">
           Contactar
         </button>
       </motion.div>

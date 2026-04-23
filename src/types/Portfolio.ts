@@ -1,4 +1,3 @@
-// src/types/Portfolio.ts
 
 export type DatosPersonales = {
   id?: number;
@@ -38,7 +37,7 @@ export type Estudio = {
 export type Tecnologia = {
   id?: number;
   nombre: string;
-  tipo: string; // Lenguaje, Framework, Base de Datos, etc.
+  tipo: string;
   nivel: string;
   descripcion: string;
   icono: string;

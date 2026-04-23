@@ -13,7 +13,6 @@ export const getDatosPersonales = async (): Promise<DatosPersonales[]> => {
   }
 };
 
-// Obtener por ID
 export const getDatosPersonalesById = async (id: number): Promise<DatosPersonales | null> => {
   try {
     const response = await fetch(`${API_BASE_URL}/DatosPersonales/${id}`);

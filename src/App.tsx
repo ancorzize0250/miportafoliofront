@@ -1,4 +1,4 @@
-// src/App.tsx
+
 import { useState, useEffect } from 'react';
 import Background from './components/Background';
 import FallingCubes from './components/FallingCubes';
@@ -12,8 +12,8 @@ import TechIcon from './components/TechIcon';
 function App() {
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'perfil' | 'experiencia' | 'estudios' | 'tech'>('perfil');
-  
+  const [activeTab, setActiveTab] = useState<'perfil' | 'experiencia' | 'estudios' | 'tech' | 'contacto'>('perfil');
+ 
   const [datos, setDatos] = useState<DatosPersonales[]>([]);
   const [experiencias, setExperiencias] = useState<ExperienciaLaboral[]>([]);
   const [estudios, setEstudios] = useState<Estudio[]>([]);
@@ -24,7 +24,8 @@ function App() {
     { id: 'perfil', label: 'Sobre Mí' },
     { id: 'experiencia', label: 'Experiencia' },
     { id: 'estudios', label: 'Estudios' },
-    { id: 'tech', label: 'Tecnologías' }
+    { id: 'tech', label: 'Tecnologías' },
+    { id: 'contacto', label: 'Contactar' }
   ];
 
   useEffect(() => {
@@ -46,6 +47,11 @@ function App() {
     }
   }, [showPortfolio]);
 
+  const handleContactRedirect = () => {
+    setShowPortfolio(true);
+    setActiveTab('contacto');
+  };
+
   return (
     <div className="relative min-h-screen w-full text-white selection:bg-purple-500/30">
       <Background />
@@ -54,7 +60,14 @@ function App() {
       <main className="relative z-20 container mx-auto px-6">
         <AnimatePresence mode="wait">
           {!showPortfolio ? (
-            <Hero key="hero" onShowPortfolio={() => setShowPortfolio(true)} />
+            <Hero 
+              key="hero" 
+              onShowPortfolio={() => {
+                setShowPortfolio(true);
+                setActiveTab('perfil');
+              }} 
+              onContactClick={handleContactRedirect}
+            />
           ) : (
             <motion.section 
               key="portfolio" 
@@ -63,10 +76,8 @@ function App() {
               exit={{ opacity: 0, y: -10 }}
               className="py-8 max-w-6xl mx-auto"
             >
-              {/* NAVEGACIÓN SUPERIOR REFORMADA */}
               <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-16 border-b border-white/5 pb-8">
                 
-                {/* MENÚ DE NAVEGACIÓN (Izquierda/Centro) */}
                 <nav className="flex gap-1 bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-sm">
                   {menuOptions.map((option) => (
                     <button
@@ -83,7 +94,6 @@ function App() {
                   ))}
                 </nav>
 
-                {/* BOTÓN VOLVER MEJORADO (Derecha) */}
                 <button 
                   onClick={() => setShowPortfolio(false)} 
                   className="group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-red-500/10 hover:border-red-500/50 transition-all duration-300"
@@ -112,7 +122,6 @@ function App() {
                       exit={{ opacity: 0, x: -5 }}
                       transition={{ duration: 0.2 }}
                     >
-                      {/* SOBRE MÍ */}
                       {activeTab === 'perfil' && (
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                           <div className="lg:col-span-4 flex justify-center">
@@ -159,7 +168,6 @@ function App() {
                         </div>
                       )}
 
-                      {/* EXPERIENCIA */}
                       {activeTab === 'experiencia' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {experiencias.map((exp) => (
@@ -178,7 +186,6 @@ function App() {
                         </div>
                       )}
 
-                      {/* ESTUDIOS */}
                       {activeTab === 'estudios' && (
                         <div className="space-y-4 max-w-4xl mx-auto">
                           {estudios.map((edu) => (
@@ -198,7 +205,6 @@ function App() {
                         </div>
                       )}
 
-                      {/* TECNOLOGÍAS */}
                       {activeTab === 'tech' && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
                           {techs.map((tech) => (
@@ -215,6 +221,62 @@ function App() {
                           ))}
                         </div>
                       )}
+
+                      {activeTab === 'contacto' && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="max-w-2xl mx-auto"
+                        >
+                          <div className="bg-white/5 border border-white/10 p-10 rounded-[2.5rem] backdrop-blur-xl text-center relative overflow-hidden">
+                            <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 blur-[80px] rounded-full"></div>
+                            
+                            <h3 className="text-3xl font-bold text-white mb-10">Canales de Contacto</h3>
+                            
+                            <div className="space-y-8 mb-12 text-lg">
+                           
+                              <div className="flex items-center justify-center gap-5 text-gray-300 group">
+                                <TechIcon name="gmail" className="w-6 h-6 transition-transform group-hover:scale-110" />
+                                <p className="font-light">
+                                  <strong className="text-white block text-sm uppercase tracking-widest opacity-50">Correo</strong>
+                                  cordobaangel0250@gmail.com
+                                </p>
+                              </div>
+
+                              <div className="flex items-center justify-center gap-5 text-gray-300 group">
+                                <div className="p-2 bg-purple-500/10 rounded-lg">
+                                  <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                  </svg>
+                                </div>
+                                <p className="font-light">
+                                  <strong className="text-white block text-sm uppercase tracking-widest opacity-50">WhatsApp / Tel</strong>
+                                  +57 311 510 8204
+                                </p>
+                              </div>
+
+                              <div className="flex items-center justify-center gap-5 text-gray-300 group">
+                                <TechIcon name="maps" className="w-6 h-6 transition-transform group-hover:scale-110" />
+                                <p className="font-light">
+                                  <strong className="text-white block text-sm uppercase tracking-widest opacity-50">Ubicación</strong>
+                                  Medellín, Antioquia
+                                </p>
+                              </div>
+                            </div>
+
+                            <a 
+                              href="https://wa.me/573115108204" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-3 px-10 py-4 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(37,211,102,0.3)]"
+                            >
+                              <TechIcon name="whatsapp" className="w-6 h-6" />
+                              CHATEAR AHORA
+                            </a>
+                          </div>
+                        </motion.div>
+                      )}
+
                     </motion.div>
                   </AnimatePresence>
                 )}
